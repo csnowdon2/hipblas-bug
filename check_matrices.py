@@ -5,4 +5,4 @@ B = pd.read_csv("B.csv", header=None)
 C = pd.read_csv("C.csv", header=None)
 
 diff = abs(C - (A @ B.T))
-print("Delta", diff.max().max())
+print("norm(C - AB^T) =", diff.max().max())

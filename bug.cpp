@@ -72,10 +72,6 @@ int main(int argc, char *argv[]) {
   std::vector<double> host_C(m*n);
   gpuAssert(hipMemcpy(host_C.data(), C, m*n*sizeof(double), 
                       hipMemcpyDeviceToHost));
-  double norm = 0.0;
-  for (auto &x : host_C)
-    norm = std::max(norm, std::abs(x));
-  std::cout << "C norm = " << norm << std::endl;
 
   save_matrix(A, m, k, "A.csv");
   save_matrix(B, n, k, "B.csv");
