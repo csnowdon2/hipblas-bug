@@ -55,9 +55,14 @@ int main(int argc, char *argv[]) {
   gpuAssert(hipMalloc(&B, n*k*sizeof(double)));
   gpuAssert(hipMalloc(&C, m*n*sizeof(double)));
 
-  hiprandGenerateUniformDouble(rng, A, m*k);
+
+  std::vector<double> host_A(m*k);
+  for (auto &x : host_A) x = 0.0;
+  host_A[0] = 1.0;
+
+  gpuAssert(hipMemcpy(A, host_A.data(), m*k*sizeof(double), hipMemcpyHostToDevice));
+  
   hiprandGenerateUniformDouble(rng, B, n*k);
-  hiprandGenerateUniformDouble(rng, C, m*n);
 
   hipblasDgemm(handle,
               HIPBLAS_OP_N,
@@ -68,10 +73,6 @@ int main(int argc, char *argv[]) {
               B, n,
               &beta,
               C, m);
-
-  std::vector<double> host_C(m*n);
-  gpuAssert(hipMemcpy(host_C.data(), C, m*n*sizeof(double), 
-                      hipMemcpyDeviceToHost));
 
   save_matrix(A, m, k, "A.csv");
   save_matrix(B, n, k, "B.csv");
